@@ -1,0 +1,27 @@
+{
+  "name": "dbnoderest",
+  "version": "1.0.0",
+  "description": "dbnoderest",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexandrLivitskiy/dbNodeREST.git"
+  },
+  "author": "Alexandr Livitskiy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexandrLivitskiy/dbNodeREST/issues"
+  },
+  "homepage": "https://github.com/AlexandrLivitskiy/dbNodeREST#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongodb": "^3.1.13"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
