@@ -1,4 +1,6 @@
 var ObjectID = require('mongodb').ObjectID;
+var querystring = require('querystring');
+var request = require('request');
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -55,6 +57,31 @@ module.exports = function (app, db) {
                 res.send({'error': 'An error has occurred'});
             } else {
                 res.send(note);
+            }
+        });
+    });
+
+    app.post('/testreq', (req, res) => {
+        var form = {
+            countryId: '224',
+            checkNumberAvailability: 'true'
+        };
+        var formData = querystring.stringify(form);
+        var contentLength = formData.length;
+        var text = undefined;
+        request({
+            headers: {
+                'Content-Length': contentLength,
+                'Content-Type': 'application/json'
+            },
+            uri: 'http://gci03-p01-ags05.lab.nordigy.ru/mobile/api/proxy.html?cmd=numbers.getStatesWithNumbers',
+            body: formData,
+            method: 'POST'
+        }, function (err, result, body) {
+            if (err) {
+                res.send({'error': 'An error has occurred'});
+            } else {
+                res.send(body);
             }
         });
     });
