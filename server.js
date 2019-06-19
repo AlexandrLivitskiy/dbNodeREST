@@ -18,4 +18,4 @@ MongoClient.connect(db.url, (err, database) => {
     app.listen(port, () => {
         console.log('We are live on ' + port);
     });
-})
+});

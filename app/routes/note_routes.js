@@ -1,6 +1,7 @@
 var ObjectID = require('mongodb').ObjectID;
 var querystring = require('querystring');
 var request = require('request');
+var products = require("./actions/products");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -15,15 +16,7 @@ module.exports = function (app, db) {
         });
     });
 
-    app.get('/products', (req, res) => {
-        db.collection('products').find().toArray((err, item) => {
-            if (err) {
-                res.send({'error': 'An error has occurred'});
-            } else {
-                res.send(item);
-            }
-        });
-    });
+    app.get('/products', (req, res) => {products.getAllProducts(res, db);});
 
     app.post('/products', (req, res) => {
         const note = {name: req.body.name, price: req.body.price, done: req.body.done};
