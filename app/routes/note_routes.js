@@ -2,6 +2,7 @@ var ObjectID = require('mongodb').ObjectID;
 var querystring = require('querystring');
 var request = require('request');
 var products = require("./actions/products");
+var insta = require("./actions/insta");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -77,5 +78,9 @@ module.exports = function (app, db) {
                 res.send(body);
             }
         });
+    });
+
+    app.get('/instaComp', (req, res) => {
+        insta.getAllNotSuberSube(res);
     });
 };
