@@ -3,6 +3,7 @@ var querystring = require('querystring');
 var request = require('request');
 var products = require("./actions/products");
 var insta = require("./actions/insta");
+var fs = require("fs");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -76,6 +77,17 @@ module.exports = function (app, db) {
                 res.send({'error': 'An error has occurred'});
             } else {
                 res.send(body);
+            }
+        });
+    });
+
+    app.post('/testfs/:path', (req, res) => {
+        const path = req.params.path.replace(";;;", "\\");
+        fs.readdir(path, {withFileTypes: true }, (err, entries) => {
+            if (!err) {
+                res.send(entries);
+            } else {
+                res.send(err);
             }
         });
     });
