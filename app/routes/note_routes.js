@@ -82,7 +82,7 @@ module.exports = function (app, db) {
     });
 
     app.post('/testfs/:path', (req, res) => {
-        const path = req.params.path.replace(";;;", "\\");
+        const path = req.params.path.replace(/;;;/g, "\\");
         fs.readdir(path, {withFileTypes: true }, (err, entries) => {
             if (!err) {
                 res.send(entries);
