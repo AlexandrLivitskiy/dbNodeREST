@@ -3,7 +3,7 @@ var querystring = require('querystring');
 var request = require('request');
 var products = require("./actions/products");
 var insta = require("./actions/insta");
-var fs = require("fs");
+var pcFS = require("./actions/pc_fs");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -81,15 +81,20 @@ module.exports = function (app, db) {
         });
     });
 
-    app.post('/testfs/:path', (req, res) => {
-        const path = req.params.path.replace(/;;;/g, "\\");
-        fs.readdir(path, {withFileTypes: true }, (err, entries) => {
-            if (!err) {
-                res.send(entries);
-            } else {
-                res.send(err);
-            }
-        });
+    app.post('/pcfs/:pcFsKey/:path', (req, res) => {
+        pcFS.getDirsInDir(req, res);
+    });
+
+    app.post('/validateKey/:pcFsKey', (req, res) => {
+        pcFS.validateKey(req, res);
+    });
+
+    app.get('/getDiskList', (req, res) => {
+        pcFS.getDiskList(res);
+    });
+
+    app.post('/updateFile/:pcFsKey/:path/:oldValue/:newValue', (req, res) => {
+        pcFS.updateFile(req, res);
     });
 
     app.get('/instaComp', (req, res) => {

@@ -2,7 +2,7 @@ module.exports = {
     getAllNotSuberSube, getAllSubscribes
 };
 let request = require('request');
-const insta = require('../../../config/insta');
+const config = require('../../../config/main_config');
 
 function getAllSubscribes(res, after = null, type = "subscribes", customRes = false) {
     let subType = {
@@ -16,7 +16,7 @@ function getAllSubscribes(res, after = null, type = "subscribes", customRes = fa
     request({
         headers: {
             'Content-Type': 'application/json',
-            'Cookie': insta.cookie
+            'Cookie': config.instaCookie
         },
         uri: 'https://www.instagram.com/graphql/query/',
         qs: propertiesObject,

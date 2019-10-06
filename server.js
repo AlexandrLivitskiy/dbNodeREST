@@ -1,7 +1,7 @@
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
-const db = require('./config/db');
+const config = require('./config/main_config');
 const app = express();
 const port = 8000;
 app.use(function(req, res, next) {
@@ -10,7 +10,7 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(bodyParser.urlencoded({extended: true}));
-MongoClient.connect(db.url, (err, database) => {
+MongoClient.connect(config.mongoUrl, (err, database) => {
     if (err) {
         return console.log(err);
     }
