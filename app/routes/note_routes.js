@@ -97,6 +97,10 @@ module.exports = function (app, db) {
         pcFS.updateFile(req, res);
     });
 
+    app.post('/createFile/:pcFsKey/:path/:content', (req, res) => {
+        pcFS.createFile(req, res);
+    });
+
     app.get('/instaComp', (req, res) => {
         insta.getAllNotSuberSube(res);
     });

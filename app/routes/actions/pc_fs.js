@@ -1,5 +1,5 @@
 module.exports = {
-    getDirsInDir, validateKey, getDiskList, updateFile
+    getDirsInDir, validateKey, getDiskList, updateFile, createFile
 };
 const config = require('../../../config/main_config');
 let fs = require("fs");
@@ -30,6 +30,14 @@ function updateFile(req, res) {
         let contents = fs.readFileSync(req.params.path, 'utf8');
         contents = contents.split(req.params.oldValue).join(req.params.newValue);
         fs.writeFileSync(req.params.path, contents);
+    } else {
+        res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
+    }
+}
+
+function createFile(req, res) {
+    if (config.pcFsKey === req.params.pcFsKey) {
+        fs.writeFileSync(req.params.path, req.params.content);
     } else {
         res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
     }
