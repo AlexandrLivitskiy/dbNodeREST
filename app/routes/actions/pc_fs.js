@@ -30,6 +30,7 @@ function updateFile(req, res) {
         let contents = fs.readFileSync(req.params.path, 'utf8');
         contents = contents.split(req.params.oldValue).join(req.params.newValue);
         fs.writeFileSync(req.params.path, contents);
+        res.send("File updated");
     } else {
         res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
     }
@@ -37,7 +38,24 @@ function updateFile(req, res) {
 
 function createFile(req, res) {
     if (config.pcFsKey === req.params.pcFsKey) {
-        fs.writeFileSync(req.params.path, req.params.content);
+        let pathArray = req.params.path.split("\\");
+        let tempPath = pathArray[0];
+        for (let i = 1; i < pathArray.length - 1; i++) {
+            tempPath += "\\" + pathArray[i];
+            try {
+                fs.statSync(tempPath);
+            } catch(e) {
+                fs.mkdirSync(tempPath);
+            }
+        }
+        let content = req.params.content
+            .split(";;;1;;;").join("\\")
+            .split(";;;2;;;").join("/")
+            .split(";;;3;;;").join("*")
+            .split(";;;4;;;").join("?")
+            .split(";;;5;;;").join("#");
+        fs.writeFileSync(req.params.path, content);
+        res.send("File added");
     } else {
         res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
     }
