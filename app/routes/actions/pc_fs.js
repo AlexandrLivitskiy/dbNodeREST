@@ -1,5 +1,5 @@
 module.exports = {
-    getDirsInDir, validateKey, getDiskList, updateFile, createFile
+    getDirsInDir, validateKey, getDiskList, updateFile, createFile, addToFile
 };
 const config = require('../../../config/main_config');
 let fs = require("fs");
@@ -48,15 +48,27 @@ function createFile(req, res) {
                 fs.mkdirSync(tempPath);
             }
         }
-        let content = req.params.content
-            .split(";;;1;;;").join("\\")
-            .split(";;;2;;;").join("/")
-            .split(";;;3;;;").join("*")
-            .split(";;;4;;;").join("?")
-            .split(";;;5;;;").join("#");
-        fs.writeFileSync(req.params.path, content);
-        res.send("File added");
+        fs.writeFileSync(req.params.path, decodeContent(req.params.content));
+        res.send("SUCCESS: File added");
     } else {
         res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
     }
+}
+
+function addToFile(req, res) {
+    if (config.pcFsKey === req.params.pcFsKey) {
+        fs.appendFileSync(req.params.path, decodeContent(req.params.content));
+        res.send("SUCCESS: Content added to File");
+    } else {
+        res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
+    }
+}
+
+function decodeContent(content) {
+    return content
+        .split(";;;1;;;").join("\\")
+        .split(";;;2;;;").join("/")
+        .split(";;;3;;;").join("*")
+        .split(";;;4;;;").join("?")
+        .split(";;;5;;;").join("#");
 }

@@ -101,6 +101,10 @@ module.exports = function (app, db) {
         pcFS.createFile(req, res);
     });
 
+    app.post('/addToFile/:pcFsKey/:path/:content', (req, res) => {
+        pcFS.addToFile(req, res);
+    });
+
     app.get('/instaComp', (req, res) => {
         insta.getAllNotSuberSube(res);
     });
