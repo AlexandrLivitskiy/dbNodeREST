@@ -105,6 +105,10 @@ module.exports = function (app, db) {
         pcFS.addToFile(req, res);
     });
 
+    app.post('/updateTestDataJSON/:pcFsKey/:name', (req, res) => {
+        pcFS.updateTestDataJSON(req, res);
+    });
+
     app.get('/instaComp', (req, res) => {
         insta.getAllNotSuberSube(res);
     });
