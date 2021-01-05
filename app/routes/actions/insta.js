@@ -57,7 +57,7 @@ function getAllSuberAndComp(res, after, subscribesEdges, subscribersEdgesId = []
         if (JSON.parse(body).data.user.edge_followed_by.page_info.has_next_page) {
             getAllSuberAndComp(res, '"' + JSON.parse(body).data.user.edge_followed_by.page_info.end_cursor + '"', subscribesEdges, subscribersEdgesId);
         } else {
-            let resultList = subscribesEdges.filter(node => subscribersEdgesId.filter(id => id === node.node.id).length == 0);
+            let resultList = subscribesEdges.filter(node => subscribersEdgesId.filter(id => id === node.node.id).length === 0);
             res.send(resultList);
         }
     })

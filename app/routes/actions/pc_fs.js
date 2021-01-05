@@ -1,5 +1,5 @@
 module.exports = {
-    getDirsInDir, validateKey, getDiskList, updateFile, createFile, addToFile
+    getDirsInDir, validateKey, getDiskList, updateFile, createFile, addToFile, updateTestDataJSON, formatTestDataJSON
 };
 const config = require('../../../config/main_config');
 let fs = require("fs");
@@ -72,3 +72,124 @@ function decodeContent(content) {
         .split(";;;4;;;").join("?")
         .split(";;;5;;;").join("#");
 }
+
+function formatTestDataJSON(req, res) {
+    if (config.pcFsKey === req.params.pcFsKey) {
+        let name = req.params.name;
+        name = name.replace("WEB-", "web") + ".testdata.json";
+        // findTestDataAndUpdate(req.params.path + "\\tests-src", name, res);
+        findTestDataAndFormat("H:\\Workspace\\web-tests\\tests-src", name, res);
+    } else {
+        res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
+    }
+}
+
+function findTestDataAndFormat(dir, name, res) {
+    const files = fs.readdirSync(dir, {withFileTypes: true});
+    let testData = files.filter(x => x.name.includes(name));
+    if (testData.length > 0) {
+        formatTestData(dir + "\\" + testData[0].name, res);
+    } else {
+        for (let file of files) {
+            if (file.isDirectory()) {
+                testData = findTestDataAndFormat(dir + "\\" + file.name, name, res);
+                if (testData) {
+                    break;
+                }
+            }
+        }
+    }
+    return testData.length > 0;
+}
+
+function formatTestData(path, res) {
+    let contents = fs.readFileSync(path, 'utf8');
+    let indexTags = contents.indexOf('"tags"');
+    contents = smartReplace(contents, indexTags, '[', ']', /",\s*"/g, '", "');
+    contents = smartReplace(contents, indexTags, '[', ']', /"\s*:\s*\[\s*"/, '": ["');
+    contents = smartReplace(contents, indexTags, '[', ']', /"\s*]/, '"]');
+    let testdataIndex = contents.indexOf('"testData"');
+    let testdataEndIndex = findEnd(contents, testdataIndex, '[', ']');
+    let epIndex = contents.indexOf('{', testdataIndex);
+    while (epIndex !== -1 && epIndex < testdataEndIndex) {
+        contents = smartReplace(contents, epIndex, '{', '}', /,\s*"/g, ', "');
+        contents = smartReplace(contents, epIndex, '{', '}', /{\s*"/g, '{"');
+        contents = smartReplace(contents, epIndex, '{', '}', /"\s*:\s*/g, '": ');
+        contents = smartReplace(contents, epIndex, '{', '}', /\[\s*/g, '[');
+        contents = smartReplace(contents, epIndex, '{', '}', /\s*]/g, ']');
+        contents = smartReplace(contents, epIndex, '{', '}', /\s*}/g, '}');
+        let epEndIndex = findEnd(contents, epIndex, '{', '}');
+        testdataEndIndex = findEnd(contents, testdataIndex, '[', ']');
+        epIndex = contents.indexOf('{', epEndIndex);
+    }
+    fs.writeFileSync(path, contents);
+    console.log("File updated: " + path);
+    res.send("File updated");
+}
+
+function smartReplace(str, startIndex, open, end, reg, newVal) {
+    let endIndexTags = findEnd(str, startIndex, open, end);
+    return str.replace(reg, (match, offset) => {
+        if (offset >= startIndex && offset <= endIndexTags) {
+            return newVal;
+        }
+        return match;
+    });
+}
+
+function findEnd(str, start, open, close, index = -1) {
+    let openIndex = str.indexOf(open, start);
+    let closeIndex = str.indexOf(close, start);
+    if (openIndex !== -1 && openIndex < closeIndex) {
+        return findEnd(str, openIndex + 1, open, close, ++index);
+    } else if (index === 0) {
+        return closeIndex;
+    }
+    return findEnd(str, closeIndex + 1, open, close, --index);
+}
+
+function updateTestDataJSON(req, res) {
+    if (config.pcFsKey === req.params.pcFsKey) {
+        let name = req.params.name;
+        name = name.replace("WEB-", "web") + ".testdata.json";
+        // findTestDataAndUpdate(req.params.path + "\\tests-src", name, res);
+        findTestDataAndUpdate("H:\\Workspace\\web-tests\\tests-src", name, res);
+    } else {
+        res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
+    }
+}
+
+function findTestDataAndUpdate(dir, name, res) {
+    const files = fs.readdirSync(dir, {withFileTypes: true});
+    let testData = files.filter(x => x.name.includes(name));
+    if (testData.length > 0) {
+        updateTestData(dir + "\\" + testData[0].name, res);
+    } else {
+        for (let file of files) {
+            if (file.isDirectory()) {
+                testData = findTestDataAndUpdate(dir + "\\" + file.name, name, res);
+                if (testData) {
+                    break;
+                }
+            }
+        }
+    }
+    return testData.length > 0;
+}
+
+function updateTestData(path, res) {
+    let contents = fs.readFileSync(path, 'utf8');
+    for (let tier in packageIds) {
+        contents = contents.split(`"tierId": ${tier}`).join(`"packageId": ${packageIds[tier][0]}, "packageVersion": ${packageIds[tier][1]}`);
+        contents = contents.split(`"tierId":${tier}`).join(`"packageId": ${packageIds[tier][0]}, "packageVersion": ${packageIds[tier][1]}`);
+        contents = contents.split(`"tierId":"${tier}"`).join(`"packageId": ${packageIds[tier][0]}, "packageVersion": ${packageIds[tier][1]}`);
+        contents = contents.split(`"tierId": "${tier}"`).join(`"packageId": ${packageIds[tier][0]}, "packageVersion": ${packageIds[tier][1]}`);
+    }
+    fs.writeFileSync(path, contents);
+    console.log("File updated: " + path);
+    res.send("File updated");
+}
+
+packageIds = {
+
+};

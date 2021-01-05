@@ -1,9 +1,10 @@
-var ObjectID = require('mongodb').ObjectID;
-var querystring = require('querystring');
-var request = require('request');
-var products = require("./actions/products");
-var insta = require("./actions/insta");
-var pcFS = require("./actions/pc_fs");
+let ObjectID = require('mongodb').ObjectID;
+let querystring = require('querystring');
+let request = require('request');
+let products = require("./actions/products");
+let insta = require("./actions/insta");
+let pcFS = require("./actions/pc_fs");
+let jira = require("./actions/jira");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -109,7 +110,15 @@ module.exports = function (app, db) {
         pcFS.updateTestDataJSON(req, res);
     });
 
+    app.post('/formatTestDataJSON/:pcFsKey/:name', (req, res) => {
+        pcFS.formatTestDataJSON(req, res);
+    });
+
     app.get('/instaComp', (req, res) => {
         insta.getAllNotSuberSube(res);
+    });
+
+    app.get('/jiraTest', (req, res) => {
+        jira.jiraTest(req, res);
     });
 };
