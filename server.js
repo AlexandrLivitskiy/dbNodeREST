@@ -10,6 +10,8 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(express.static('public'));
 MongoClient.connect(config.mongoUrl, (err, database) => {
     if (err) {
         return console.log(err);

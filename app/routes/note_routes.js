@@ -5,6 +5,7 @@ let products = require("./actions/products");
 let insta = require("./actions/insta");
 let pcFS = require("./actions/pc_fs");
 let jira = require("./actions/jira");
+let taskman = require("./actions/taskman");
 
 module.exports = function (app, db) {
     app.get('/products/:id', (req, res) => {
@@ -121,4 +122,19 @@ module.exports = function (app, db) {
     app.get('/jiraTest', (req, res) => {
         jira.jiraTest(req, res);
     });
+
+    /* ---------------------- Task Man ---------------------- */
+
+    app.get('/getTaskById/:id', (req, res) => {taskman.getTaskById(req, res, db);});
+    app.get('/taskMan', (req, res) => {taskman.getAllTasks(res, db);});
+    app.post('/addTask', (req, res) => {taskman.addTask(req, res, db);});
+    app.post('/deleteTaskById/:id', (req, res) => {taskman.deleteTaskById(req, res, db);});
+    app.post('/updateTaskById/:id', (req, res) => {taskman.updateTaskById(req, res, db);});
+
+    app.get('/taskManFields', (req, res) => {taskman.getAllTaskFields(res, db);});
+    app.post('/addTaskField', (req, res) => {taskman.addTaskField(req, res, db);});
+
+    app.get('/getAllUsers', (req, res) => {taskman.getAllUsers(res, db);});
+    app.post('/signUp', (req, res) => {taskman.signUp(req, res, db);});
+    app.post('/logIn', (req, res) => {taskman.logIn(req, res, db);});
 };
