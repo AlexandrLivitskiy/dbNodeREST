@@ -111,7 +111,7 @@ function signUp(req, res, db) {
     db.collection('taskManUsers').find({login: req.body.login}, {login: 1}).toArray((err, item) => {
         if (err) {
             res.send({'error': 'An error has occurred'});
-        } else if (item) {
+        } else if (item.length > 0) {
             res.send({'error': `User with login ${req.body.login} is already exist`});
         } else {
             let hash = bcrypt.hashSync(req.body.password, saltRounds);
