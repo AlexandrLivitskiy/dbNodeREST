@@ -200,23 +200,22 @@ function updateTestData(path, res) {
 
 function getTestsList(req, res) {
     if (config.pcFsKey === req.params.pcFsKey) {
-        let search = req.params.search;
-        let tests = searchAllTests("H:\\Workspace\\web-tests\\tests-src", search);
+        let tests = searchAllTests("H:\\Workspace\\web-tests\\tests-src", req);
         res.send(tests);
     } else {
         res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
     }
 }
 
-function searchAllTests(dir, search) {
+function searchAllTests(dir, req) {
     let allTests = [];
     const files = fs.readdirSync(dir, {withFileTypes: true});
     for (let file of files) {
         if (file.isDirectory()) {
-            let tests = searchAllTests(dir + "\\" + file.name, search);
+            let tests = searchAllTests(dir + "\\" + file.name, req);
             allTests = [...allTests, ...tests];
         } else {
-            if (isIncludeSearch(dir + "\\" + file.name, search)) {
+            if (isIncludeSearch(dir + "\\" + file.name, req)) {
                 let test = file.name.split(".")[0].replace("web", "WEB-");
                 if (!allTests.includes(test)) allTests.push(test);
             }
@@ -225,9 +224,16 @@ function searchAllTests(dir, search) {
     return allTests;
 }
 
-function isIncludeSearch(path, search) {
+function isIncludeSearch(path, req) {
     let contents = fs.readFileSync(path, 'utf8');
-    return contents.includes(search);
+    let search = req.params.search;
+    let orSearch = req.body.orSearch || [];
+    let include = req.body.include || [];
+    let excude = req.body.excude || [];
+
+    return (contents.includes(search) || orSearch.some(x => contents.includes(x))) &&
+        include.every(x => contents.includes(x)) &&
+        excude.every(x => !contents.includes(x));
 }
 
 packageIds = {
