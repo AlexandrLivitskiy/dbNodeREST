@@ -1,5 +1,13 @@
 module.exports = {
-    getDirsInDir, validateKey, getDiskList, updateFile, createFile, addToFile, updateTestDataJSON, formatTestDataJSON
+    getDirsInDir,
+    validateKey,
+    getDiskList,
+    updateFile,
+    createFile,
+    addToFile,
+    updateTestDataJSON,
+    formatTestDataJSON,
+    getTestsList
 };
 const config = require('../../../config/main_config');
 let fs = require("fs");
@@ -188,6 +196,38 @@ function updateTestData(path, res) {
     fs.writeFileSync(path, contents);
     console.log("File updated: " + path);
     res.send("File updated");
+}
+
+function getTestsList(req, res) {
+    if (config.pcFsKey === req.params.pcFsKey) {
+        let search = req.params.search;
+        let tests = searchAllTests("H:\\Workspace\\web-tests\\tests-src", search);
+        res.send(tests);
+    } else {
+        res.send("ERROR: WRONG KEY: " + req.params.pcFsKey);
+    }
+}
+
+function searchAllTests(dir, search) {
+    let allTests = [];
+    const files = fs.readdirSync(dir, {withFileTypes: true});
+    for (let file of files) {
+        if (file.isDirectory()) {
+            let tests = searchAllTests(dir + "\\" + file.name, search);
+            allTests = [...allTests, ...tests];
+        } else {
+            if (isIncludeSearch(dir + "\\" + file.name, search)) {
+                let test = file.name.split(".")[0].replace("web", "WEB-");
+                if (!allTests.includes(test)) allTests.push(test);
+            }
+        }
+    }
+    return allTests;
+}
+
+function isIncludeSearch(path, search) {
+    let contents = fs.readFileSync(path, 'utf8');
+    return contents.includes(search);
 }
 
 packageIds = {

@@ -115,6 +115,10 @@ module.exports = function (app, db) {
         pcFS.formatTestDataJSON(req, res);
     });
 
+    app.get('/getTestsList/:pcFsKey/:search', (req, res) => {
+        pcFS.getTestsList(req, res);
+    });
+
     app.get('/instaComp', (req, res) => {
         insta.getAllNotSuberSube(res);
     });
